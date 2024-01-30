@@ -15,43 +15,42 @@ export default function Home() {
   const { data: session, status } = useSession()
 
   useEffect(() => {
-    setUser(session?.user!.name! || null)
-    findOrCreateUser()
+    console.log('user session', session?.user!.name!)
+    setUsername()
+    console.log('state', user)
+    findUser()
+    createUser(user!)
   }, [])
 
+  const setUsername = useCallback(() => {
+    setUser(session?.user!.name!)
+  }, [session])
 
-  const findOrCreateUser = async () => {
+  const findUser = async () => {
     try {
-      if (user) {
-        const existingUser = await prisma.user.findUnique({
-          where: {
-            name: user,
-          },
-        });
+      const response = await fetch(`api/userRequest?username=${encodeURIComponent(user!)}`)
+      const data = await response.json()
+      console.log(data)
 
-        if (existingUser) {
-          console.log("Utilisateur existant :", existingUser)
-        } else {
-          await createUser()
-        }
-      }
-    } catch (error) {
-      console.error('Erreur lors de la recherche :', error);
+    } catch(error) {
+      console.error(error)
     }
   }
 
-  const createUser = async () => {
+  const createUser = async (username: string) => {
     try {
-      if (user) {
-        const newUser = await prisma.user.create({
-          data: {
-            name: user,
-          }
-        })
-        console.log("Nouvel utilisateur crée :", newUser)
-      }
-    } catch(error) {
-      console.error('Erreur à la création de user :', error)
+      const response = await fetch('api/userRequests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: username })
+
+      })
+      const data = await response.json()
+      console.log('reponse requete création user', data)
+    } catch (error) {
+      console.error('Erreur lors de la recherche :', error);
     }
   }
 

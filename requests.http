@@ -1,0 +1,13 @@
+POST http://localhost:3000/api/userRequests/
+Content-Type: application/json
+
+{
+  "name": "toto"
+}
+
+###
+GET http://localhost:3000/api/userGet?username=toto
+
+###
+GET http://localhost:3000/api/userRequests?username=toto
+Content-Type: application/json
