@@ -3,12 +3,57 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { Prisma, PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient()
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const [user, setUser] = useState<string | null>(null)
   const { data: session, status } = useSession()
+
+  useEffect(() => {
+    setUser(session?.user!.name! || null)
+    findOrCreateUser()
+  }, [])
+
+
+  const findOrCreateUser = async () => {
+    try {
+      if (user) {
+        const existingUser = await prisma.user.findUnique({
+          where: {
+            name: user,
+          },
+        });
+
+        if (existingUser) {
+          console.log("Utilisateur existant :", existingUser)
+        } else {
+          await createUser()
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la recherche :', error);
+    }
+  }
+
+  const createUser = async () => {
+    try {
+      if (user) {
+        const newUser = await prisma.user.create({
+          data: {
+            name: user,
+          }
+        })
+        console.log("Nouvel utilisateur crée :", newUser)
+      }
+    } catch(error) {
+      console.error('Erreur à la création de user :', error)
+    }
+  }
 
   return (
     <>
