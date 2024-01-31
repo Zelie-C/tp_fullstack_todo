@@ -71,6 +71,7 @@ export default function Home() {
           <h1>To Do List</h1>
           <Link href="/addtodo">Ajouter une nouvelle tâche</Link>
           <Link href="/modifytodo">Modifier une tâche</Link>
+          <Link href="/simon">Jeu du Simon</Link>
         </div>
       </main>
     </>
