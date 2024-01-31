@@ -13,34 +13,45 @@ const randomColor = () => {
 }
 
 const SimonGame = () => {
-    const [sequence, setSequence] = useState<string[]>(["red", "yellow"])
+    const [sequence, setSequence] = useState<string[]>(["red", "red"])
     const [position, setPosition] = useState<number>(0)
     const [isComputer, setIsComputer] = useState<boolean>(true)
+    const [pause, setPause] = useState<boolean>(false)
     
     const colorToLight = useMemo(
         () => {
             return sequence[position]
         }, [sequence, position])
 
+    console.log('state', sequence, position, isComputer, pause)
+
+    useEffect(() => {
+        if(pause){
+           setTimeout(() => {
+            setPause(false)
+           }, 200) 
+        }
+    }, [pause])
+
     useEffect(
         () => {
             if(isComputer){
                 if (position < sequence.length){
-                    setTimeout(() => {
-                        setTimeout(
-                            () => {
-                                setPosition(position + 1)
-                                console.log("position dans timeout", position)
-                            }, 1000)
-                    }, 500)
+                    if(!pause){
+                        setTimeout(() => {
+                            setPosition(position + 1)
+                            setPause(true)
+                        }, 1000)
+                    }
                 }
                 else {
+                    setPause(false)
                     setIsComputer(false)
                     setPosition(0)
                     console.log("position après timeout", position)
                 }
             }
-        }, [position, sequence.length, isComputer]
+        }, [position, sequence.length, isComputer, pause]
     )
 
     const handleColorClick = useCallback(
@@ -83,7 +94,12 @@ const SimonGame = () => {
                 <div className={`${styles.gameContainer}`}>
                     {arrayColor.map(
                         (color, index) => (
-                            <Colorbox key={index} onClick={() => handleColorClick(color)} color={color} isComputer={isComputer} colorToLight={colorToLight}/>
+                            <Colorbox 
+                                key={index} 
+                                className={`${styles.colorbox} ${styles[`${color}box`]} ${isComputer && !pause && colorToLight === color ? styles[`${color}box`] : styles.darker}`} 
+                                onClick={() => handleColorClick(color)} 
+                                color={color}
+                            />
                         )
                     )}
                 </div>

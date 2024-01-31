@@ -1,10 +1,10 @@
 import styles from "@/styles/Home.module.css"
 
-const Colorbox = (props: {color: string, isComputer: boolean, colorToLight: string, onClick: (clickedColor: string) => void}) => {
+const Colorbox = (props: {color: string, className: string, onClick: (clickedColor: string) => void}) => {
     
     return (
         <div 
-            className={`${styles.colorbox} ${styles[`${props.color}box`]} ${props.isComputer && props.colorToLight === props.color ? styles[`${props.color}box`] : styles.darker}`}
+            className={props.className}
             onClick={() => props.onClick(props.color)}></div>
     )
     
